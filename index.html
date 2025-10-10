@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+  <title>Verificador Lotería de Navidad - 5 primeros premios</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 24px; background: #f7f9fc; color:#0b2545; }
+    .card { background: white; padding: 18px; border-radius: 10px; box-shadow: 0 6px 18px rgba(10, 20, 40, 0.06); max-width: 720px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    .prizes { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .prize { padding:8px 10px; border-radius:8px; background:#eef6ff; color:#034a97; font-weight:600; }
+    .result { margin-top:14px; padding:12px; border-radius:8px; background:#fff7e6; color:#6a4b00; display:none; }
+    .result.win { background:#e6fff0; color:#0b6b33; }
+    button { padding:10px 14px; border-radius:8px; border:0; background:#0366d6; color:white; cursor:pointer; font-weight:600; }
+    small { color:#567; display:block; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Verificador Lotería de Navidad — 5 primeros premios</h1>
+    <p>Introduce tu número (5 dígitos) con el botón. Los cinco números de premio están abajo — cámbialos si quieres.</p>
+
+    <div class="prizes" id="prizeList"></div>
+
+    <button id="checkBtn">Comprobar mi número</button>
+    <small>Puedes comprobar tantas veces como quieras. Pulsa Cancelar en el prompt para salir.</small>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    // --- CONFIGURACIÓN: aquí pones los cinco primeros premios (como strings de 5 dígitos) ---
+    // Ejemplo inventado: cámbialos por los que tú quieras
+    const primerosPremios = [
+      { numero: "11345", premio: "1º Premio" },
+      { numero: "54327", premio: "2º Premio" },
+      { numero: "00047", premio: "3º Premio" },
+      { numero: "11110", premio: "4º Premio" },
+      { numero: "22243", premio: "5º Premio" }
+    ];
+    // -------------------------------------------------------------------------
+
+    // Mostrar los premios en la UI
+    const prizeListEl = document.getElementById('prizeList');
+    function renderPrizes() {
+      prizeListEl.innerHTML = '';
+      primerosPremios.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'prize';
+        el.textContent = `${p.premio}: ${p.numero}`;
+        prizeListEl.appendChild(el);
+      });
+    }
+    renderPrizes();
+
+    // Helper: normaliza a 5 dígitos (rellena con ceros a la izquierda)
+    function padToFive(nStr) {
+      return nStr.padStart(5, '0');
+    }
+
+    // Comprobación principal
+    function comprobarNumero(inputRaw) {
+      const resultEl = document.getElementById('result');
+      resultEl.style.display = 'none';
+      resultEl.classList.remove('win');
+
+      if (inputRaw === null) { // usuario pulsó Cancelar
+        return;
+      }
+
+      const trimmed = String(inputRaw).trim();
+
+      // Validación: solo dígitos, longitud <= 5
+      if (!/^\d{1,5}$/.test(trimmed)) {
+        alert('Entrada no válida. Introduce solo dígitos (1 a 5 dígitos). Ejemplo: 01234 o 12345.');
+        return;
+      }
+
+      const numeroFormateado = padToFive(trimmed);
+
+      // Buscar coincidencia exacta
+      const premioEncontrado = primerosPremios.find(p => p.numero === numeroFormateado);
+
+      if (premioEncontrado) {
+        // Mostrar ganador
+        const texto = `¡ENHORABUENA! Tu número ${numeroFormateado} ha sido premiado: ${premioEncontrado.premio}.`;
+        alert(texto);
+        resultEl.textContent = texto;
+        resultEl.classList.add('win');
+        resultEl.style.display = 'block';
+      } else {
+        const texto = `Lo siento, ${numeroFormateado} no está entre los cinco primeros premios.`;
+        alert(texto);
+        resultEl.textContent = texto;
+        resultEl.style.display = 'block';
+      }
+    }
+
+    // Botón que lanza el prompt
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const numeroUsuario = prompt('Introduce tu número (hasta 5 dígitos). Ejemplo: 01234');
+      comprobarNumero(numeroUsuario);
+    });
+
+    // --- Opcional: comprobar automáticamente si el usuario escribe el número en la URL como ?num=01234
+    (function checkFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const q = params.get('num');
+      if (q) {
+        // Si hay query param, comprobarlo automáticamente (útil para pruebas)
+        comprobarNumero(q);
+      }
+    })();
+  </script>
+</body>
+</html>
