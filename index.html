@@ -27,8 +27,14 @@
 marquee {
   white-space: nowrap;
 }
+body {
+  background-image: url("../img/decimolotianavidad25.png");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover; /* Ajusta la imagen al tamaño de la pantalla */
+}
 
-  </style>
+</style>
 </head>
 <body>
   <div class="card">
@@ -113,7 +119,7 @@ marquee {
 
     // Botón que lanza el prompt
     document.getElementById('checkBtn').addEventListener('click', () => {
-      const numeroUsuario = prompt('Introduce tu número (hasta 5 dígitos). Ejemplo: 01234');
+      const numeroUsuario=prompt('Introduce tu número (hasta 5 dígitos). Ejemplo: 01234');
       comprobarNumero(numeroUsuario);
     });
 
